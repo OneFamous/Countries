@@ -19,10 +19,11 @@ class ListViewModel: ViewModel(){
     val loading = MutableLiveData<Boolean>()
 
     fun refresh(){
-        fetchCountries()
+        val limit = 1 // değişebilir
+        fetchCountries(limit)
     }
 
-    private fun fetchCountries(){
+    private fun fetchCountries(limit: Int){
         loading.value=true
         disposable.add(
             countriesService.getCountries()
@@ -30,7 +31,8 @@ class ListViewModel: ViewModel(){
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(object: DisposableSingleObserver<List<Country>>(){
                     override fun onSuccess(value: List<Country>) {
-                        countries.value = value
+                        val limitedCountries=value.take(limit)
+                        countries.value = limitedCountries
                         countryLoadError.value = false
                         loading.value = false
                     }
