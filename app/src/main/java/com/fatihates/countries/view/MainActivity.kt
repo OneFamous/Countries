@@ -1,25 +1,13 @@
 package com.fatihates.countries.view
 
-import android.arch.lifecycle.ViewModelProviders
+
 import android.os.Bundle
-import android.view.LayoutInflater
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.fatihates.countries.R
 import com.fatihates.countries.databinding.ActivityMainBinding
-import com.fatihates.countries.databinding.ItemCountryBinding
 import com.fatihates.countries.viewmodel.ListViewModel
 
 class MainActivity : AppCompatActivity() {
@@ -39,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this).get(ListViewModel::class.java)
         viewModel.refresh()
-        
+
         binding.countriesList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = countriesAdapter
@@ -56,6 +44,16 @@ class MainActivity : AppCompatActivity() {
         viewModel.countryLoadError.observe(this, Observer { isError ->
             isError?.let { binding.listError.visibility = if (it) View.VISIBLE else View.GONE }
         })
+        viewModel.loading.observe(this, Observer { isLoading ->
+            isLoading?.let {
+                binding.loadingView.visibility = if (it) View.VISIBLE else View.GONE
+                if (it) {
+                    binding.listError.visibility = View.GONE
+                    binding.countriesList.visibility = View.GONE
+                }
+            }
+        })
+
 
     }
 }
