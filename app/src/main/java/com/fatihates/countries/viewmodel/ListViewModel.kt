@@ -19,7 +19,7 @@ class ListViewModel: ViewModel(){
     val loading = MutableLiveData<Boolean>()
 
     fun refresh(){
-        val limit = 1 // değişebilir
+        val limit = 10 // değişebilir
         fetchCountries(limit)
     }
 
