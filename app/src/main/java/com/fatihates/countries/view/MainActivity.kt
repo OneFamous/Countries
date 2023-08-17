@@ -7,6 +7,7 @@ import android.view.View
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.fatihates.countries.databinding.ActivityMainBinding
 import com.fatihates.countries.viewmodel.ListViewModel
 
@@ -15,12 +16,19 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewModel: ListViewModel
     private val countriesAdapter = CountryListAdapter(arrayListOf())
 
+
     lateinit var binding: ActivityMainBinding
+
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        swipeRefreshLayout = binding.swiperefresh
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -32,14 +40,21 @@ class MainActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(context)
             adapter = countriesAdapter
         }
+        swipeRefreshLayout.setOnRefreshListener {
+            swipeRefreshLayout.isRefreshing = false
+            viewModel.refresh()
+        }
+
         observerViewModel()
 
     }
 
     fun observerViewModel() {
         viewModel.countries.observe(this, Observer { countries ->
-            countries?.let { countriesAdapter.updateCountries(it)
-            binding.countriesList.visibility = View.VISIBLE}
+            countries?.let {
+                countriesAdapter.updateCountries(it)
+                binding.countriesList.visibility = View.VISIBLE
+            }
         })
 
         viewModel.countryLoadError.observe(this, Observer { isError ->
